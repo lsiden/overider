@@ -5,10 +5,9 @@ module Overider
     orig_unbound_method = self.instance_method(sym)
 
     define_method(sym) do |*a, &blk|
-      orig_self = self
 
       self.define_singleton_method(:overiden) do |*a, &blk|
-        orig_bound_method = orig_unbound_method.bind(orig_self)
+        orig_bound_method = orig_unbound_method.bind(self)
 
         if !!blk then
           orig_bound_method.call *a, &blk
