@@ -67,6 +67,26 @@ describe Overider do
     end
 
     b = B.new
-    puts b.hello.should == "hello overide B then A"
+    b.hello.should == "hello overide B then A"
+  end
+
+  it 'works with modules' do
+    module HelloModule
+      def hello
+        "hello"
+      end
+    end
+
+    class C
+      include HelloModule
+      extend Overider
+
+      overide :hello do |*a|
+        overiden(*a) + " C"
+      end
+    end
+
+    c = C.new
+    c.hello.should == "hello C"
   end
 end
