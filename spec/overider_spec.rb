@@ -154,7 +154,7 @@ describe Overider do
     result.should == "hello block in F"
   end
 
-  it 'can access instance variables of original class' do
+  it 'can access instance variables' do
     module HelloModule
       def hello
         "hello "
@@ -166,18 +166,40 @@ describe Overider do
       extend Overider
 
       def initialize
-        @one = 1
-        @two = 2
+        @one = 'one'
+        @two = 'two'
       end
 
       # In the overide block, we have to declare blk as a normal block arg, not &blk.
       # It must be a Proc or lambda
       overide :hello do 
-        overiden + (@one + @two).to_s
+        overiden + "#{@one} and #{@two}"
       end
     end
 
     result = G.new.hello ->{ "block" }
-    result.should == "hello 3"
+    result.should == "hello one and two"
+  end
+
+  it 'can access instance variables defined in base class' do
+    module HelloModule
+      def hello
+        "hello "
+      end
+    end
+
+    class H < G
+      include HelloModule
+      extend Overider
+
+      # In the overide block, we have to declare blk as a normal block arg, not &blk.
+      # It must be a Proc or lambda
+      overide :hello do 
+        overiden + " and again: #{@one} and #{@two}"
+      end
+    end
+
+    result = H.new.hello ->{ "block" }
+    result.should == "hello one and two and again: one and two"
   end
 end
