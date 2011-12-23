@@ -4,25 +4,47 @@
 Despite Ruby's clean design and flexibility, the language has no native feature
 that allows one to over-ride a method without irrevocably losing the original binding
 of the method name.
-=alias= is a well-worn idiom that circumvents this limitation,
+`alias` is a well-worn idiom that circumvents this limitation,
 but blogger Jay Fields wrote an [interesting post](http://blog.jayfields.com/2006/12/ruby-alias-method-alternative.html)
-that reminds us that =alias= comes with some less-than-desireable side-effects
+that reminds us that `alias` comes with some less-than-desireable side-effects
 that may not be significant in small scripts and projects 
 but may become a problem for larger projects.
 
-In the same post, Jay offered an interesting alternative to using =alias=, using =Module#instance_method= and =Module#define_method= instead.
+In the [same post](http://blog.jayfields.com/2006/12/ruby-alias-method-alternative.html),
+Jay offered an interesting alternative to `alias`,
+using instead `Module#instance_method` and `Module#define_method`.
 This is much better,
-but I was still bothered by the clunky syntax
-  on = self.instance_method(:on!)
+but I'm not a Ruby ninja yet,
+and I would rather not have to remember the Baroque syntax in `x = self.instance_method(:on!)`
+and `x.bind(self).call` every time I want to do this,
+let alone what they mean when I look at my code several weeks later.
 
-and
-  on.bind(self).call
-
-So I looked and found a better way.
+So I thought about how I could take Jay's example one step further 
+and after some trial and lots of error came up with this.
 
 ## Description
-A mix-in module that allows for super-clean method over-riding without resorting to =alias= 
+A mix-in module that allows for super-clean method over-riding without resorting to `alias` 
 or making unbound methods visible.
 
+## Synopsis
+    class A
+      def hello
+        "hello"
+      end
+    end
+
+    # Later, I want to overide class A methods
+
+    class A
+      extend Overider
+
+      overide (:hello) do |*a|
+        overiden(*a) + " overide"
+      end
+    end
+
+    puts A.new.hello # ==> "hello overide"
+
 ## See also
-  * [override](https://github.com/soveran/override)
+  * [Ruby: Alias method alternative, Jay Fields](http://blog.jayfields.com/2006/12/ruby-alias-method-alternative.html)
+  * <https://github.com/soveran/override>

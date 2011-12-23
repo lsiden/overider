@@ -66,8 +66,7 @@ describe Overider do
       end
     end
 
-    b = B.new
-    b.hello.should == "hello overide B then A"
+    B.new.hello.should == "hello overide B then A"
   end
 
   it 'works with modules' do
@@ -86,7 +85,52 @@ describe Overider do
       end
     end
 
-    c = C.new
-    c.hello.should == "hello C"
+    C.new.hello.should == "hello C"
+  end
+
+  it 'works with args' do
+    module HelloWithArgs
+      def hello(a, b, c)
+        "hello #{a}, #{b}, #{c}"
+      end
+    end
+
+    class D
+      include HelloWithArgs
+      extend Overider
+
+      overide :hello do |a, b, c|
+        overiden(1, 2, 3) + " C"
+      end
+    end
+
+    result = D.new.hello do
+      "I say " 
+    end
+    result.should == "hello 1, 2, 3 C"
+  end
+
+  it 'works with procs' do
+    module HelloModule
+      def hello(*a, &blk)
+        (!!blk ? blk.call : '') + "hello"
+      end
+    end
+
+    class D
+      include HelloModule
+      extend Overider
+
+      overide :hello do |*a, &blk|
+puts blk.inspect
+instance_exec(*a) &blk
+        #overiden(*a, &blk) + " C"
+      end
+    end
+
+    result = D.new.hello do
+      "I say " 
+    end
+    result.should == "I say hello C"
   end
 end
