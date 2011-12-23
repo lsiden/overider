@@ -6,9 +6,9 @@ module Overider
 
     define_method(sym) do |*a, &blk|
       orig_self = self
-      obj = Object.new
+      #obj = Object.new
 
-      obj.define_singleton_method(:overiden) do |*a, &blk|
+      self.define_singleton_method(:overiden) do |*a, &blk|
         orig_bound_method = orig_unbound_method.bind(orig_self)
 
         if !!blk then
@@ -19,9 +19,9 @@ module Overider
       end
 
       if !!blk then
-        obj.instance_exec(*a, blk, &pr)
+        self.instance_exec(*a, blk, &pr)
       else
-        obj.instance_exec(*a, &pr)
+        self.instance_exec(*a, &pr)
       end
     end
   end
