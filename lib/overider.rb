@@ -10,6 +10,7 @@ module Overider
 
       obj.define_singleton_method(:overiden) do |*a, &blk|
         orig_bound_method = orig_unbound_method.bind(orig_self)
+
         if !!blk then
           orig_bound_method.call *a, &blk
         else
@@ -18,9 +19,10 @@ module Overider
       end
 
       if !!blk then
-        a.push blk.to_proc
+        obj.instance_exec(*a, blk, &pr)
+      else
+        obj.instance_exec(*a, &pr)
       end
-      obj.instance_exec(*a, &pr)
     end
   end
 end

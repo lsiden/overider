@@ -100,35 +100,31 @@ describe Overider do
       extend Overider
 
       overide :hello do |a, b, c|
-        overiden(1, 2, 3) + " C"
+        overiden(a, b, c) + " C"
       end
     end
 
-    result = D.new.hello do
-      "I say " 
-    end
+    result = D.new.hello 1, 2, 3
     result.should == "hello 1, 2, 3 C"
   end
 
-  it 'works with procs' do
+  it 'kinda works with procs' do
     module HelloModule
-      def hello(*a, &blk)
-        (!!blk ? blk.call : '') + "hello"
+      def hello(blk)
+        blk.call + "hello"
       end
     end
 
-    class D
+    class E
       include HelloModule
       extend Overider
 
-      overide :hello do |*a, &blk|
-puts blk.inspect
-instance_exec(*a) &blk
-        #overiden(*a, &blk) + " C"
+      overide :hello do |blk|
+        (overiden blk) + " C"
       end
     end
 
-    result = D.new.hello do
+    result = E.new.hello do
       "I say " 
     end
     result.should == "I say hello C"
