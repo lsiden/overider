@@ -55,4 +55,18 @@ describe Overider do
     a.goodby.should == "goodby overide"
     a.hello.should == "hello overide" # "overiden" overiden!
   end
+
+  it 'works with inheritance' do
+
+    class B < A
+      extend Overider
+
+      overide :hello do |*a|
+        overiden(*a) + " B then A"
+      end
+    end
+
+    b = B.new
+    puts b.hello.should == "hello overide B then A"
+  end
 end
