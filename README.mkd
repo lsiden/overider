@@ -1,0 +1,28 @@
+# Overider
+
+## Background
+Despite Ruby's clean design and flexibility, the language has no native feature
+that allows one to over-ride a method without irrevocably losing the original binding
+of the method name.
+=alias= is a well-worn idiom that circumvents this limitation,
+but blogger Jay Fields wrote an [interesting post](http://blog.jayfields.com/2006/12/ruby-alias-method-alternative.html)
+that reminds us that =alias= comes with some less-than-desireable side-effects
+that may not be significant in small scripts and projects 
+but may become a problem for larger projects.
+
+In the same post, Jay offered an interesting alternative to using =alias=, using =Module#instance_method= and =Module#define_method= instead.
+This is much better,
+but I was still bothered by the clunky syntax
+  on = self.instance_method(:on!)
+
+and
+  on.bind(self).call
+
+So I looked and found a better way.
+
+## Description
+A mix-in module that allows for super-clean method over-riding without resorting to =alias= 
+or making unbound methods visible.
+
+## See also
+  * [override](https://github.com/soveran/override)
