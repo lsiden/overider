@@ -100,18 +100,18 @@ describe Overider do
       extend Overider
 
       overide :hello do |a, b, c|
-        overiden(a, b, c) + " C"
+        overiden(a, b, c) + " D"
       end
     end
 
     result = D.new.hello 1, 2, 3
-    result.should == "hello 1, 2, 3 C"
+    result.should == "hello 1, 2, 3 D"
   end
 
-  it 'kinda works with procs' do
+  it 'plays nice with blocks' do
     module HelloModule
-      def hello(blk)
-        blk.call + "hello"
+      def hello(&blk)
+        "hello " + blk.call
       end
     end
 
@@ -119,14 +119,38 @@ describe Overider do
       include HelloModule
       extend Overider
 
+      # In the overide block, we have to declare blk as a normal block arg, not &blk.
+      # It must be a Proc or lambda
       overide :hello do |blk|
-        (overiden blk) + " C"
+        overiden { blk.call } + " in E"
       end
     end
 
     result = E.new.hello do
-      "I say " 
+      "block" 
     end
-    result.should == "I say hello C"
+    result.should == "hello block in E"
+  end
+
+  it 'plays nice with lambda' do
+    module HelloModule
+      def hello(&blk)
+        "hello " + blk.call
+      end
+    end
+
+    class F
+      include HelloModule
+      extend Overider
+
+      # In the overide block, we have to declare blk as a normal block arg, not &blk.
+      # It must be a Proc or lambda
+      overide :hello do |blk|
+        overiden { blk.call } + " in F"
+      end
+    end
+
+    result = F.new.hello ->{ "block" }
+    result.should == "hello block in F"
   end
 end
